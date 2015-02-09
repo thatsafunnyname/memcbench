@@ -22,7 +22,7 @@ int opt_port = 11211;
 char *opt_socket = "";
 int opt_sleep_millis = 0;
 int opt_rows= 100;
-const char *opt_key_suffix = "";
+char *opt_key_suffix = "";
 int opt_debug= 0;
 #else
 extern unsigned long opt_requests ;
