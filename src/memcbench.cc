@@ -43,14 +43,19 @@ void* do_process(void *tls){
   char host[1024];
   sprintf(host, "%s:%d", opt_hostname, opt_port);
   struct memcached_st *memc = memcached_create(NULL);
-  struct memcached_server_st *servers= memcached_servers_parse(host);
-  ((Tls*)tls)->memc= memc;
-  ((Tls*)tls)->servers= servers;
-  memcached_return rc = memcached_server_push(memc, servers);
-  if(rc) {
-    fprintf(stderr, "Error occured during memcached push=%d\n", rc);
-    pthread_exit(0);
+  struct memcached_server_st *servers(NULL);
+  if( opt_socket && opt_socket[0] != '\0' ){
+    memcached_server_add_unix_socket(memc, opt_socket);
+  } else {
+    servers = memcached_servers_parse(host);
+    memcached_return rc = memcached_server_push(memc, servers);
+    if(rc) {
+      fprintf(stderr, "Error occured during memcached push=%d\n", rc);
+      pthread_exit(0);
+    }
+    ((Tls*)tls)->servers= servers;
   }
+  ((Tls*)tls)->memc= memc;
 
   for(unsigned long l=0; l<Tls::trans_per_thread; l++){
     ret = do_select((Tls*)tls);
@@ -61,8 +66,13 @@ void* do_process(void *tls){
       usleep(opt_sleep_millis);
     }
   }
-  memcached_server_list_free(servers);
+
+  if(servers){
+    memcached_server_list_free(servers);
+  }
+
   memcached_free(memc);
+
   pthread_exit(0);  
 }
 

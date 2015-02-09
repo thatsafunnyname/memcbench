@@ -19,15 +19,17 @@ unsigned long opt_requests = 0;
 int opt_nclient = 1;
 char *opt_hostname = "127.0.0.1";
 int opt_port = 11211;
+char *opt_socket = "";
 int opt_sleep_millis = 0;
 int opt_rows= 100;
-char *opt_key_suffix = "";
+const char *opt_key_suffix = "";
 int opt_debug= 0;
 #else
 extern unsigned long opt_requests ;
 extern int opt_nclient;
 extern char* opt_hostname;
 extern int opt_port;
+extern char* opt_socket;
 extern int opt_sleep_millis;
 extern int opt_rows;
 extern char *opt_key_suffix;
